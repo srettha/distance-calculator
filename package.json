@@ -14,7 +14,7 @@
         "lint": "tslint --project tsconfig.json",
         "dev": "ts-node-dev --respawn --transpileOnly src/server.ts",
         "test": "jest -c jest.config.js ./tests",
-        "test:ci": "jest -c jest.config.js --ci --coverage --coverageReporters=text-lcov | coveralls"
+        "test:ci": "jest -c jest.config.js --coverage --coverageReporters=text-lcov | coveralls"
     },
     "husky": {
         "hooks": {
