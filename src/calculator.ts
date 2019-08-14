@@ -15,7 +15,7 @@ export default class DistanceCalculator implements Calculator {
     ) {}
 
     public calculate(distance: number): number {
-        if (distance < 0) {
+        if (distance < this.minFristRange) {
             throw new Error('Distance must be more than 0');
         }
 
