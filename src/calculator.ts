@@ -30,10 +30,10 @@ export default class DistanceCalculator implements Calculator {
             const currentRate = this.rate - i;
 
             if (distance >= currentRange && i === this.ranges.length - 1) {
-                return sum += (distance - previousRange) * currentRate;
+                sum += (distance - previousRange) * currentRate;
             }
 
-            if (distance >= currentRange) {
+            if (distance >= currentRange  && i !== this.ranges.length - 1) {
                 sum += (currentRange - previousRange) * currentRate;
                 continue;
             }
