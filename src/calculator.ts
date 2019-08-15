@@ -1,57 +1,48 @@
 import { Calculator } from './base';
 
 export default class DistanceCalculator implements Calculator {
-    protected readonly firstRangeRate: number = 12;
-    protected readonly minFristRange: number = 0;
-    protected readonly maxFirstRange: number = 40;
-    protected readonly secondRangeRate: number = 11;
-    protected readonly minSecondRange: number = 41;
-    protected readonly maxSecondRange: number = 100;
-    protected readonly thirdRangeRate: number = 10;
-    protected readonly minThirdRange: number = 101;
-
     constructor(
         protected readonly basePrice: number = 450,
-    ) {}
+        protected readonly ranges: number[] = [40, 100, 200],
+        protected readonly rate: number = 12,
+    ) {
+        this.ranges = ranges.sort((a, b) => a - b);
+    }
 
     public calculate(distance: number): number {
-        if (distance < this.minFristRange) {
+        if (distance < 0) {
             throw new Error('Distance must be more than 0');
         }
 
-        if (this.isFirstRange(distance)) {
-            const firstRangePrice = distance * this.firstRangeRate;
-
-            return this.basePrice + firstRangePrice;
+        if (distance === 0) {
+            return this.basePrice;
         }
 
-        if (this.isSecondRange(distance)) {
-            const fullPriceFromFirstRange = this.maxFirstRange * this.firstRangeRate;
-            const secondRangePrice = (distance - this.maxFirstRange) * this.secondRangeRate;
-
-            return this.basePrice + fullPriceFromFirstRange + secondRangePrice;
+        if (this.ranges.length === 0) {
+            return this.basePrice + (distance * this.rate);
         }
 
-        if (this.isThirdRange(distance)) {
-            const fullPriceFromFirstRange = this.maxFirstRange * this.firstRangeRate;
-            const fullPriceFromSecondRange = (this.maxSecondRange - this.maxFirstRange) * this.secondRangeRate;
-            const thirdRangePrice = (distance - this.maxSecondRange) * this.thirdRangeRate;
+        let sum = this.basePrice;
 
-            return this.basePrice + fullPriceFromFirstRange + fullPriceFromSecondRange + thirdRangePrice;
+        for (let i = 0; i < this.ranges.length; i++) {
+            const previousRange = this.ranges[i - 1] || 0;
+            const currentRange = this.ranges[i];
+            const currentRate = this.rate - i;
+
+            if (distance >= currentRange && i === this.ranges.length - 1) {
+                return sum += (distance - previousRange) * currentRate;
+            }
+
+            if (distance >= currentRange) {
+                sum += (currentRange - previousRange) * currentRate;
+                continue;
+            }
+
+            if (distance < currentRange) {
+                return sum += (distance - previousRange) * currentRate;
+            }
         }
 
-        return 0;
-    }
-
-    private isFirstRange(distance: number): boolean {
-        return distance >= this.minFristRange && distance <= this.maxFirstRange;
-    }
-
-    private isSecondRange(distance: number): boolean {
-        return distance >= this.minSecondRange && distance <= this.maxSecondRange;
-    }
-
-    private isThirdRange(distance: number): boolean {
-        return distance >= this.minThirdRange;
+        return sum;
     }
 }
